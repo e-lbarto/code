@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Säure-pH-Rechner</title>
+</head>
+<body>
+  <h1>Säure-pH-Rechner</h1>
+  <p>Bitte wählen Sie eine Säure aus der Liste aus:</p>
+  <select id="acid-select">
+    <option value="Wasserstoffchlorid (HCl)">Wasserstoffchlorid (HCl)</option>
+    <option value="Schwefelsäure (H2SO4)">Schwefelsäure (H2SO4)</option>
+    <option value="Salpetersäure (HNO3)">Salpetersäure (HNO3)</option>
+    <option value="Salpetrige Säure (HNO2)">Salpetrige Säure (HNO2)</option>
+    <option value="Schweflige Säure (H2SO3)">Schweflige Säure (H2SO3)</option>
+    <option value="Essigsäure (CH3COOH)">Essigsäure (CH3COOH)</option>
+    <option value="Zitronensäure (C6H8O7)">Zitronensäure (C6H8O7)</option>
+    <option value="Oxalsäure (H2C2O4)">Oxalsäure (H2C2O4)</option>
+    <option value="Phosphorsäure (H3PO4)">Phosphorsäure (H3PO4)</option>
+    <option value="Fluorwasserstoff (HF)">Fluorwasserstoff (HF)</option>
+  </select>
+  <button onclick="determinepH()">pH-Wert berechnen</button>
+
+  <script>
+    // Liste der Säuren und ihrer maximalen Protonenanzahl
+    const acidList = {
+      "Wasserstoffchlorid (HCl)": 1,
+      "Schwefelsäure (H2SO4)": 2,
+      "Salpetersäure (HNO3)": 1,
+      "Salpetrige Säure (HNO2)": 1,
+      "Schweflige Säure (H2SO3)": 2,
+      "Essigsäure (CH3COOH)": 1,
+      "Zitronensäure (C6H8O7)": 1,
+      "Oxalsäure (H2C2O4)": 2,
+      "Phosphorsäure (H3PO4)": 3,
+     "Fluorwasserstoff (HF)": 1
+};
+
+// Funktion, um die maximale Protonenanzahl einer Säure zu ermitteln
+function getMaxProtons(acid) {
+  return acidList[acid];
+}
+
+// Beispielauswahlbox
+let acidSelect = document.getElementById("acid-select");
+
+// Event Listener für Änderungen in der Auswahlbox
+acidSelect.addEventListener("change", function() {
+  // Ermittlung der ausgewählten Säure
+  let selectedAcid = acidSelect.options[acidSelect.selectedIndex].value;
+
+  // Ermittlung der maximalen Protonenanzahl für die ausgewählte Säure
+  let protons = getMaxProtons(selectedAcid);
+
+  // Anzeige der maximalen Protonenanzahl in der Konsole
+  console.log(`Die maximale Protonenanzahl für ${selectedAcid} beträgt ${protons}.`);
+});
+
+// Funktion, um den pH-Wert der Säure zu berechnen
+function determinepH() {
+  // Namen der ausgewählten Säure aus der Auswahlbox abfragen
+  let acid = document.getElementById("acid-select").value;
+
+  // Konzentration der Säure abfragen
+  let concentration = prompt("Bitte geben Sie die Konzentration der Säure in mol/L ein:");
+
+  // Maximale Protonenanzahl der Säure ermitteln
+  let protons = getMaxProtons(acid);
+
+  // pH-Wert der Säure berechnen
+  let pH = -Math.log10(concentration / protons);
+
+  // pH-Wert ausgeben
+  alert(`Der pH-Wert der Säure beträgt: ${pH}`);
+}
+  </script>
+</body>
+</html>
