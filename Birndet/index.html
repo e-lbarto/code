@@ -81,6 +81,15 @@
     opacity:1;
   }
 
+.stats-icon {
+  display:inline-block;
+  cursor:pointer;
+  font-size:1em;   /* gleiche Größe wie Uhrzeit */
+  color:#000;      /* monochrom schwarz */
+  filter:grayscale(100%);
+  margin-left:6px; /* kleiner Abstand zur Uhrzeit */
+}
+
   .box { 
     background:#77C487; 
     margin:12px; 
@@ -154,9 +163,12 @@
 window.addEventListener("DOMContentLoaded", async () => {
   await loadDetections();
 
-  // Alle 60 Sekunden neu laden
-  setInterval(loadDetections, 60000);
+  // Alle 60 Sekunden komplette Seite neu laden
+  setInterval(() => {
+    location.reload();
+  }, 60000);
 });
+
 
 
      // Eingebaute Übersetzungen
@@ -473,22 +485,26 @@ window.addEventListener("DOMContentLoaded", async () => {
       return entry ? entry.de : null;
     }
 
-    async function loadDetections() {
-      const url = `${BASE_URL}/stations/${STATION_ID}/detections?limit=100&api_key=${API_KEY}`;
-      const res = await fetch(url, { headers: { "Accept":"application/json" } });
-      const data = await res.json();
+async function loadDetections() {
+  const url = `${BASE_URL}/stations/${STATION_ID}/detections?limit=100&api_key=${API_KEY}`;
+  const res = await fetch(url, { headers: { "Accept":"application/json" } });
+  const data = await res.json();
 
-      if (Array.isArray(data?.detections)) {
-        for (const det of data.detections) {
-          const ts = new Date(det.timestamp);
-          const key = ts.toISOString().split("T")[0];
-          if (!detectionsByDay[key]) detectionsByDay[key] = [];
-          detectionsByDay[key].push(det);
-        }
-        dayKeys = Object.keys(detectionsByDay).sort().reverse();
-        renderDay(dayKeys[currentIndex]);
-      }
+  if (Array.isArray(data?.detections)) {
+    // <<< Wichtig: alte Daten löschen >>>
+    detectionsByDay = {};
+
+    for (const det of data.detections) {
+      const ts = new Date(det.timestamp);
+      const key = ts.toISOString().split("T")[0];
+      if (!detectionsByDay[key]) detectionsByDay[key] = [];
+      detectionsByDay[key].push(det);
     }
+    dayKeys = Object.keys(detectionsByDay).sort().reverse();
+    renderDay(dayKeys[currentIndex]);
+  }
+}
+
 
     function renderDay(dayKey) {
       const todayDetections = detectionsByDay[dayKey] || [];
@@ -662,17 +678,31 @@ window.addEventListener("DOMContentLoaded", async () => {
         icon.addEventListener("click", () => insertAndPlayAudioForSpecies(name, it.sci));
         name.appendChild(icon);
 
-        const latin = document.createElement("div");
-        latin.className = "latin";
-        latin.textContent =
-          it.sci + " (zuletzt: " +
-          it.last.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ")";
+const latin = document.createElement("div");
+latin.className = "latin";
+latin.textContent = it.sci + " (zuletzt: ";
 
-        info.appendChild(name);
-        info.appendChild(latin);
-        row.appendChild(img);
-        row.appendChild(info);
-        container.appendChild(row);
+// Uhrzeit als Text
+const timeSpan = document.createElement("span");
+timeSpan.textContent = it.last.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + ")";
+latin.appendChild(timeSpan);
+
+
+// 📊︎‑Symbol direkt daneben, führt zur species.html
+const statsIcon = document.createElement("span");
+statsIcon.className = "stats-icon";
+statsIcon.textContent = "📊︎"; // U+1F4CA + U+FE0E
+statsIcon.addEventListener("click", () => {
+  window.open(`species.html?sci=${encodeURIComponent(it.sci)}`, "_blank");
+});
+latin.appendChild(statsIcon);
+
+info.appendChild(name);
+info.appendChild(latin);
+row.appendChild(img);
+row.appendChild(info);
+container.appendChild(row);
+
       }
     }
 
