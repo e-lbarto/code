@@ -4,69 +4,131 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>BirdNET-pi Zirndorf</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin:0; background:#77C487; color:#333; font-size:1.25em; }
-    header {
-      position: relative;
-      padding:16px;
-      text-align:center;
-      font-weight:bold;
-      font-size:1.4em;
-      background:#fff;
-      border-bottom:1px solid #333;
-      color:#333;
-    }
-    header .logo {
-      position:absolute;
-      left:16px;
-      top:50%;
-      transform:translateY(-50%);
-      height:40px;
-    }
-    header .header-link { color:#333; text-decoration:none; position:relative; }
-    header .header-link::after {
-      content: "Station 13222 bei Birdweather.com";
-      position:absolute;
-      left:50%;
-      top:120%;
-      transform:translateX(-50%);
-      background:rgba(0,0,0,0.75);
-      color:#fff;
-      padding:6px 10px;
-      border-radius:6px;
-      font-size:0.7em;
-      white-space:nowrap;
-      opacity:0;
-      pointer-events:none;
-      transition:opacity 0.3s ease;
-      z-index:1000;
-    }
-    header .header-link:hover::after { opacity:1; }
+ 
 
-    .box { background:#77C487; margin:12px; padding:12px; border-radius:12px; border:3px solid #333; }
-    .box h2 { font-size:1.1em; margin:0 0 8px; color:#333; }
-    .row { display:flex; align-items:center; margin-bottom:10px; }
-    .row img { width:64px; height:64px; object-fit:cover; border-radius:6px; margin-right:10px; border:2px solid #333; transition: transform 0.3s ease; }
-    .row img:hover { transform: scale(1.75); }
-    .row .info { flex:1; color:#333; }
-    .row .info .name { font-weight:600; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-    .row .info .name a { color:#333; text-decoration:none; }
-    .row .info .name a:hover { text-decoration:underline; }
-     .row .info .latin { font-style:italic; font-size:0.8em; margin-top:2px; display:flex; align-items:center; gap:6px; }
-    .row .info .confidence { font-size:0.8em; margin-top:2px; color:#333; }     /* NEU: Zeile für Wahrscheinlichkeit */
-    .icon { display:inline-block; cursor:pointer; font-size:1.0em; color:#000; filter:grayscale(100%); }
 
-    .inline-audio { vertical-align:middle; height:28px; }
-    @media (max-width:480px){ .row img{width:48px;height:48px;} header{font-size:1.2em;} }
-  </style>
+<style>
+  body { 
+    font-family: system-ui, sans-serif; 
+    margin:0; 
+    background:#77C487; 
+    color:#333; 
+    font-size:1.25em; 
+  }
+
+  header {
+    position: relative;
+    padding:16px;
+    font-weight:bold;
+    font-size:0.98em; /* 1.4em * 0.7 = 0.98em → 30% kleiner */
+    background:#fff;
+    border-bottom:1px solid #333;
+    color:#333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Linkes Logo */
+  header .logo {
+    position: absolute;
+    left:16px;
+    top:50%;
+    transform:translateY(-50%);
+    height:40px;
+  }
+
+  /* Zentrierte Überschrift */
+  header .header-text {
+    margin:0;
+    text-align: center;
+    flex-grow: 1;
+  }
+
+  /* Rechtes klickbares Logo */
+  header .logo2-link {
+    position: absolute;
+    right:16px;
+    top:50%;
+    transform:translateY(-50%);
+  }
+
+  header .logo2-link img {
+    height:40px;
+    cursor:pointer;
+  }
+
+  /* Popup beim Hover auf Logo2 */
+  header .logo2-link::after {
+    content: "Alle Daten der Station";
+    position: absolute;
+    top: 120%; /* weiter unter dem Logo */
+    right: 0; /* rechtsbündig, um Abschnitt zu vermeiden */
+    transform: translateX(-100%); /* nach links verschieben */
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 4px 8px; /* kleineres Padding */
+    border-radius: 6px;
+    font-size: 0.6em; /* kleinerer Text */
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+
+  header .logo2-link:hover::after {
+    opacity:1;
+  }
+
+  .box { 
+    background:#77C487; 
+    margin:12px; 
+    padding:12px; 
+    border-radius:12px; 
+    border:3px solid #333; 
+  }
+
+  .box h2 { font-size:1.1em; margin:0 0 8px; color:#333; }
+
+  .row { display:flex; align-items:center; margin-bottom:10px; }
+  .row img { width:64px; height:64px; object-fit:cover; border-radius:6px; margin-right:10px; border:2px solid #333; transition: transform 0.3s ease; }
+  .row img:hover { transform: scale(1.75); }
+  .row .info { flex:1; color:#333; }
+  .row .info .name { font-weight:600; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .row .info .name a { color:#333; text-decoration:none; }
+  .row .info .name a:hover { text-decoration:underline; }
+  .row .info .latin { font-style:italic; font-size:0.8em; margin-top:2px; display:flex; align-items:center; gap:6px; }
+  .row .info .confidence { font-size:0.8em; margin-top:2px; color:#333; }     
+  .icon { display:inline-block; cursor:pointer; font-size:1.0em; color:#000; filter:grayscale(100%); }
+
+  .inline-audio { vertical-align:middle; height:28px; }
+
+  @media (max-width:480px){ 
+    .row img{width:48px;height:48px;} 
+    header{font-size:0.84em;} /* 30% kleiner als 1.2em */
+  }
+</style>
+
+ 
 </head>
 <body>
+
   <header>
-    <img src="logo.png" alt="Logo" class="logo">
-    <a href="https://app.birdweather.com/stations/13222" class="header-link" target="_blank">
-      BirdNET-pi Zirndorf
-    </a>
-  </header>
+  <!-- Linkes Logo -->
+  <img src="logo.png" alt="Logo" class="logo">
+
+  <!-- Zentrierte Überschrift -->
+  <h1 class="header-text">BirdNET-pi Zirndorf</h1>
+
+  <!-- Rechtes klickbares Logo mit Hover-Popup -->
+  <a href="https://app.birdweather.com/stations/13222" target="_blank" class="logo2-link">
+    <img src="logo2.png" alt="Birdweather Logo">
+  </a>
+</header>
+
+
+
 
   <div class="box" id="lastBox">
     <h2 id="lastHeader">Zuletzt gehört am …</h2>
